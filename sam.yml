@@ -1,0 +1,43 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: api-gw-lambda-load-test-001/02-dynamodb
+
+Parameters:
+  DynamoDBTableName:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /api-gw-lambda-load-test/001/DataTableName
+
+  StageName:
+    Type: String
+    Default: v1
+
+Resources:
+  Api:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Ref StageName
+      Cors:
+        AllowHeaders: "'DELETE,POST,GET,OPTIONS,PUT'"
+        AllowMethods: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'*'"
+
+  Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: package.zip
+      Runtime: nodejs12.x
+      Handler: index.handler
+      Policies:
+        - arn:aws:iam::aws:policy/AmazonDynamoDBReadOnlyAccess
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Method: POST
+            Path: /test
+            RestApiId: !Ref Api
+
+Outputs:
+  EndpointUrl:
+    Value: !Sub https://${Api}.execute-api.${AWS::Region}.amazonaws.com/${StageName}/test

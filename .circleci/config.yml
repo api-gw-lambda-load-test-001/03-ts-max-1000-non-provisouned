@@ -1,0 +1,93 @@
+version: 2
+
+references:
+  region: &region
+    AWS_DEFAULT_REGION: ap-northeast-1
+
+  auth_dockerhub: &auth_dockerhub
+    auth:
+      username: $DOCKERHUB_USER
+      password: $DOCKERHUB_PASSWORD
+
+  docker_python: &docker_python
+    docker:
+      - image: circleci/python:3.8.2
+        <<: *auth_dockerhub
+
+  restore_dependencies: &restore_dependencies
+    restore_cache:
+      keys:
+        - api-gw-lambda-load-test-001-01-dynamodb-poetry-{{ checksum "pyproject.toml" }}-{{ checksum "poetry.lock" }}
+
+  save_dependencies: &save_dependencies
+    save_cache:
+      paths:
+        - .venv
+      key: api-gw-lambda-load-test-001-01-dynamodb-poetry-{{ checksum "pyproject.toml" }}-{{ checksum "poetry.lock" }}
+
+  install_dependencies: &install_dependencies
+    run:
+      name: install dependencies
+      command: |
+        set -x
+        poetry install
+
+  set_poetry_in_project_true: &set_poetry_in_project_true
+    run:
+      name: poetry in-project true
+      command: |
+        set -x
+        poetry config virtualenvs.in-project true
+
+jobs:
+  deploy:
+    <<: *docker_python
+    environment:
+      <<: *region
+    steps:
+      - checkout
+      - <<: *set_poetry_in_project_true
+      - <<: *restore_dependencies
+      - <<: *install_dependencies
+      - <<: *save_dependencies
+      - run:
+          name: deploy
+          command: |
+            set -x
+
+            make deploy
+
+  prepare_dynamodb:
+    <<: *docker_python
+    environment:
+      <<: *region
+    steps:
+      - checkout
+      - <<: *set_poetry_in_project_true
+      - <<: *restore_dependencies
+      - <<: *install_dependencies
+      - <<: *save_dependencies
+      - run:
+          name: prepare dynamodb
+          command: |
+            set -x
+            make prepare-dynamodb
+
+workflows:
+  version: 2
+  deploy:
+    jobs:
+      - deploy:
+          context:
+            - dockerhub
+            - aws-config
+      - approve_for_prepare:
+          type: approval
+          requires:
+            - deploy
+      - prepare_dynamodb:
+          context:
+            - dockerhub
+            - aws-config
+          requires:
+            - approve_for_prepare

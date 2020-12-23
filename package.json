@@ -1,0 +1,25 @@
+{
+  "name": "03-ts-max-1000-non-provisouned",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/api-gw-lambda-load-test-001/03-ts-max-1000-non-provisouned.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/api-gw-lambda-load-test-001/03-ts-max-1000-non-provisouned/issues"
+  },
+  "homepage": "https://github.com/api-gw-lambda-load-test-001/03-ts-max-1000-non-provisouned#readme",
+  "devDependencies": {
+    "@types/node": "^14.14.14",
+    "aws-sdk": "^2.816.0",
+    "typescript": "^4.0.5"
+  }
+}
