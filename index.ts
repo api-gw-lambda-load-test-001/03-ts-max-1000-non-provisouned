@@ -1,5 +1,5 @@
-import {DocumentClient} from "aws-sdk/lib/dynamodb/document_client";
 import * as crypto from "crypto";
+import {DocumentClient} from "aws-sdk/clients/dynamodb";
 
 type Response = {
     statusCode: number;

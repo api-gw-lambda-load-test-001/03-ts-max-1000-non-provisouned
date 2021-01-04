@@ -28,6 +28,10 @@ Resources:
       CodeUri: package.zip
       Runtime: nodejs12.x
       Handler: index.handler
+      AutoPublishAlias: !Ref StageName
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref DynamoDBTableName
       Policies:
         - arn:aws:iam::aws:policy/AmazonDynamoDBReadOnlyAccess
       Events:

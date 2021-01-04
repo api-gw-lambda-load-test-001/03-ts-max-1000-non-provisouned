@@ -3,6 +3,7 @@ SHELL = /usr/bin/env bash -xeuo pipefail
 stack_name:=api-gw-lambda-load-test-001-03-ts-max-1000-non-provisioned
 
 build:
+	rm -f package.zip
 	npx tsc index.ts
 	zip package.zip index.js
 
