@@ -29,6 +29,7 @@ Resources:
       Runtime: nodejs12.x
       Handler: index.handler
       AutoPublishAlias: !Ref StageName
+      Timeout: 29
       Environment:
         Variables:
           TABLE_NAME: !Ref DynamoDBTableName

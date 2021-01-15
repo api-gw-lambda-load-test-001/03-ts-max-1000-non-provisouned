@@ -80,6 +80,14 @@ function create_error_response(): Response {
     }
 }
 
+async function wait(sec: number): Promise<void> {
+    return new Promise((ok) => {
+        setTimeout(() => {
+            ok();
+        }, sec * 1000);
+    });
+}
+
 exports.handler = async function(event: any) {
     let response: Response;
     try {
@@ -88,6 +96,9 @@ exports.handler = async function(event: any) {
         const client = create_client(region);
         const id = generate_random_id();
         const count: number = await get_query_count(table_name, id, client);
+        if (count == 0) {
+            await wait(2);
+        }
         response = create_response(count);
     } catch (e) {
         console.error(e);
